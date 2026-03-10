@@ -151,18 +151,19 @@ spec:
                     cp /etc/git-secret/ssh-privatekey "\$HOME/.ssh/id_ed25519"
                     chmod 600 "\$HOME/.ssh/id_ed25519"
 
-                    # Use port 22 for GitHub SSH (443 can fail with "invalid argument" in some containers)
-                    ssh-keyscan -4 -p 22 ssh.github.com > "\$HOME/.ssh/known_hosts" 2>/dev/null
+                    ssh-keyscan -4 github.com > "\$HOME/.ssh/known_hosts" 2>/dev/null
                     chmod 644 "\$HOME/.ssh/known_hosts"
 
+                    # chacha20-poly1305 fails with EINVAL in the bitnami/git container; use AES-GCM instead
                     cat > "\$HOME/.ssh/config" <<'SSHEOF'
 Host github.com
-  HostName ssh.github.com
+  HostName github.com
   Port 22
   User git
   IdentityFile /var/jenkins_home/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
+  Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
   StrictHostKeyChecking yes
   UserKnownHostsFile /var/jenkins_home/.ssh/known_hosts
 SSHEOF
