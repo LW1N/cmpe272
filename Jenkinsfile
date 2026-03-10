@@ -151,13 +151,14 @@ spec:
                     cp /etc/git-secret/ssh-privatekey "\$HOME/.ssh/id_ed25519"
                     chmod 600 "\$HOME/.ssh/id_ed25519"
 
-                    ssh-keyscan -4 -p 443 ssh.github.com > "\$HOME/.ssh/known_hosts" 2>/dev/null
+                    # Use port 22 for GitHub SSH (443 can fail with "invalid argument" in some containers)
+                    ssh-keyscan -4 -p 22 ssh.github.com > "\$HOME/.ssh/known_hosts" 2>/dev/null
                     chmod 644 "\$HOME/.ssh/known_hosts"
 
                     cat > "\$HOME/.ssh/config" <<'SSHEOF'
 Host github.com
   HostName ssh.github.com
-  Port 443
+  Port 22
   User git
   IdentityFile /var/jenkins_home/.ssh/id_ed25519
   IdentitiesOnly yes
