@@ -133,17 +133,19 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 container('kaniko') {
-                    // sh '''...''' prevents Groovy interpolation; the shell expands
-                    // $IMAGE and $IMAGE_TAG from the Jenkins environment at runtime.
-                    sh '''
-                    /kaniko/executor \
-                        --context=dir://$(pwd) \
-                        --dockerfile=Dockerfile \
-                        --destination=${IMAGE}:${IMAGE_TAG} \
-                        --destination=${IMAGE}:latest \
-                        --cache=true \
-                        --cleanup
-                    '''
+                    script {
+                        withEnv(["IMAGE_TAG=${env.IMAGE_TAG}"]) {
+                            sh '''
+                            /kaniko/executor \
+                                --context=dir://$(pwd) \
+                                --dockerfile=Dockerfile \
+                                --destination=${IMAGE}:${IMAGE_TAG} \
+                                --destination=${IMAGE}:latest \
+                                --cache=true \
+                                --cleanup
+                            '''
+                        }
+                    }
                 }
             }
         }
@@ -152,8 +154,8 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 container('git') {
-                    // sh '''...''' prevents Groovy interpolation so that every $VAR
-                    // reference is expanded by the shell from Jenkins env vars.
+                    script {
+                        withEnv(["IMAGE_TAG=${env.IMAGE_TAG}"]) {
                     sh '''
                     set -euo pipefail
 
@@ -219,6 +221,8 @@ SSHEOF
                         git pull --rebase origin main
                     done
                     '''
+                        }
+                    }
                 }
             }
         }
