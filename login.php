@@ -4,7 +4,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/auth.php';
 
 if (is_logged_in()) {
-    header('Location: /');
+    // If the session has timed out, check_session_timeout() will destroy it and
+    // redirect to /login?timeout=1 (never reaching the header() below).
+    check_session_timeout();
+    header('Location: ' . (is_admin() ? '/admin/users.php' : '/'));
     exit;
 }
 
@@ -17,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token((string) ($_POST['csrf_token'] ?? ''))) {
         $error = 'Security validation failed. Please reload the page and try again.';
     } elseif (attempt_login($userid, $password)) {
-        header('Location: /');
+        header('Location: ' . (is_admin() ? '/admin/users.php' : '/'));
         exit;
     } else {
         $error = 'Invalid credentials';

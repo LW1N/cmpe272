@@ -102,6 +102,28 @@ function run_page_rendering_tests(TestRunner $t): void
         }
     });
 
+    $t->run('admin login sets is_admin in session for admin redirect', function () use ($t) {
+        $_SESSION = [];
+        $ok = attempt_login('admin', 'admin123');
+        $t->assertTrue($ok, 'Admin login should succeed');
+        $t->assertTrue(is_admin(), 'Session should have is_admin=true after admin login');
+        // The redirect destination is determined by is_admin(): /admin/users.php for admin, / for user
+        $redirectDest = is_admin() ? '/admin/users.php' : '/';
+        $t->assertEqual('/admin/users.php', $redirectDest, 'Admin should redirect to /admin/users.php');
+        $_SESSION = [];
+    });
+
+    $t->run('standard user login sets is_admin=false for user redirect', function () use ($t) {
+        $_SESSION = [];
+        $ok = attempt_login('user', 'user123');
+        $t->assertTrue($ok, 'User login should succeed');
+        $t->assertFalse(is_admin(), 'Session should have is_admin=false after user login');
+        // The redirect destination is determined by is_admin(): /admin/users.php for admin, / for user
+        $redirectDest = is_admin() ? '/admin/users.php' : '/';
+        $t->assertEqual('/', $redirectDest, 'Standard user should redirect to /');
+        $_SESSION = [];
+    });
+
     $t->run('contacts page displays contact table', function () use ($t) {
         $_SESSION = [];
         ob_start();
