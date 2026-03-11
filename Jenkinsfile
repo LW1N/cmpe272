@@ -163,17 +163,17 @@ spec:
                     chmod 644 "\$HOME/.ssh/known_hosts"
 
                     # chacha20-poly1305 fails with EINVAL in the bitnami/git container; use AES-GCM instead
-                    cat > "\$HOME/.ssh/config" <<'SSHEOF'
+                    cat > "\$HOME/.ssh/config" <<SSHEOF
 Host github.com
   HostName github.com
   Port 22
   User git
-  IdentityFile $HOME/.ssh/id_ed25519
+  IdentityFile \$HOME/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
   Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
   StrictHostKeyChecking yes
-  UserKnownHostsFile $HOME/.ssh/known_hosts
+  UserKnownHostsFile \$HOME/.ssh/known_hosts
 SSHEOF
                     chmod 600 "\$HOME/.ssh/config"
 
