@@ -7,6 +7,25 @@ declare(strict_types=1);
  */
 
 if (session_status() === PHP_SESSION_NONE) {
+    // Harden the admin session cookie without requiring app-wide config.
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || ((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+
+    // Preserve default cookie params but force secure when HTTPS is in use.
+    $params = session_get_cookie_params();
+    session_set_cookie_params([
+        'lifetime' => (int) ($params['lifetime'] ?? 0),
+        'path' => (string) ($params['path'] ?? '/'),
+        'domain' => (string) ($params['domain'] ?? ''),
+        'secure' => $isHttps ? true : (bool) ($params['secure'] ?? false),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+
     session_start();
 }
 

@@ -8,6 +8,7 @@ COPY apache-htaccess.conf /etc/apache2/conf-available/htaccess.conf
 RUN a2enconf htaccess
 
 COPY index.php demo.php about.php products.php news.php contacts.php .htaccess /var/www/html/
+COPY admin /var/www/html/admin
 COPY includes /var/www/html/includes
 COPY css /var/www/html/css
 COPY data /var/www/html/data
