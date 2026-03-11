@@ -65,9 +65,15 @@ spec:
         }
     }
 
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
     environment {
         IMAGE = 'docker.io/lw1n/php-mysql-demo'
-        IMAGE_TAG = 'sha-placeholder'
+        IMAGE_TAG = ''
         GIT_REPO_GITOPS = 'git@github.com:LW1N/selfhosted-webapps.git'
         KUSTOMIZATION_FILE = 'apps/php-mysql-demo/kustomization.yaml'
     }
@@ -115,7 +121,7 @@ spec:
             steps {
                 container('test') {
                     sh 'echo "Running PHP lint..."'
-                    sh 'find . -name "*.php" -exec php -l {} \\;'
+                    sh 'find . -name "*.php" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l'
                 }
             }
         }
@@ -196,7 +202,13 @@ SSHEOF
 
                     git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \\
                         commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
-                    git push origin main
+
+                    for attempt in 1 2 3; do
+                        git push origin main && break
+                        echo "Push attempt \$attempt failed, retrying in 5s..." >&2
+                        sleep 5
+                        git pull --rebase origin main
+                    done
                     """
                 }
             }
