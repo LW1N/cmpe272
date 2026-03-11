@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/auth.php';
 $page_title = $page_title ?? 'Pass & Play';
 ?>
 <!DOCTYPE html>
