@@ -144,10 +144,18 @@ spec:
                     sh """
                     set -euo pipefail
 
-                    export HOME=/var/jenkins_home
+                    WORK_DIR=\$(mktemp -d)
+                    HOME_DIR=\$(mktemp -d)
+                    trap 'rm -rf "\$WORK_DIR" "\$HOME_DIR"' EXIT
+
+                    export HOME="\$HOME_DIR"
                     mkdir -p "\$HOME/.ssh"
                     chmod 700 "\$HOME/.ssh"
 
+                    if [ ! -f /etc/git-secret/ssh-privatekey ]; then
+                        echo "Missing SSH key at /etc/git-secret/ssh-privatekey (Kubernetes secret: git-ssh-key)." >&2
+                        exit 1
+                    fi
                     cp /etc/git-secret/ssh-privatekey "\$HOME/.ssh/id_ed25519"
                     chmod 600 "\$HOME/.ssh/id_ed25519"
 
@@ -171,22 +179,24 @@ SSHEOF
 
                     export GIT_SSH_COMMAND="ssh -F \$HOME/.ssh/config -o IdentitiesOnly=yes"
 
-                    git config --global user.name "jenkins-ci"
-                    git config --global user.email "jenkins@selfhosted-webapps.local"
-
-                    WORK_DIR=\$(mktemp -d)
                     git clone --depth 1 --branch main ${GIT_REPO_GITOPS} "\$WORK_DIR"
                     cd "\$WORK_DIR"
 
-                    sed -i 's|newTag: .*|newTag: ${IMAGE_TAG}|' ${KUSTOMIZATION_FILE}
+                    if [ ! -f "${KUSTOMIZATION_FILE}" ]; then
+                        echo "Missing kustomization file: ${KUSTOMIZATION_FILE}" >&2
+                        exit 1
+                    fi
+
+                    # Update the image tag (portable sed; keeps indentation)
+                    sed -i.bak -E 's|^([[:space:]]*newTag:[[:space:]]*).*$|\\1${IMAGE_TAG}|' ${KUSTOMIZATION_FILE}
+                    rm -f "${KUSTOMIZATION_FILE}.bak"
 
                     git add ${KUSTOMIZATION_FILE}
-                    git diff --cached --quiet && echo "No change to commit" && rm -rf "\$WORK_DIR" && exit 0
+                    git diff --cached --quiet && echo "No change to commit" && exit 0
 
-                    git commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
+                    git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \\
+                        commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
                     git push origin main
-
-                    rm -rf "\$WORK_DIR"
                     """
                 }
             }
