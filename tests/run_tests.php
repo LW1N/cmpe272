@@ -36,6 +36,9 @@ run_news_data_tests($t);
 require __DIR__ . '/test_page_rendering.php';
 run_page_rendering_tests($t);
 
+require __DIR__ . '/test_user_access.php';
+run_user_access_tests($t);
+
 $exitCode = $t->summary();
 ob_end_flush();
 exit($exitCode);

@@ -91,6 +91,16 @@ a:hover { color: var(--accent-hover); }
     color: var(--accent);
 }
 .site-nav .nav-secondary:hover { color: var(--accent-hover); }
+.site-nav .nav-user {
+    margin-left: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+}
 
 /* Main content */
 .site-main {

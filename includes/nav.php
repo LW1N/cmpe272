@@ -31,4 +31,7 @@ if (is_logged_in()) {
         </a>
     <?php endforeach; ?>
     <a href="/demo.php" class="nav-secondary">Demo</a>
+    <?php if (is_logged_in()): ?>
+        <span class="nav-user" aria-label="Logged in as <?= htmlspecialchars(current_userid()) ?>"><?= htmlspecialchars(current_userid()) ?></span>
+    <?php endif; ?>
 </nav>

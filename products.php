@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-$page_title = 'Products &amp; Services';
+$page_title = 'Products & Services';
 $current_page = 'products';
 require __DIR__ . '/includes/header.php';
 ?>
