@@ -168,12 +168,12 @@ Host github.com
   HostName github.com
   Port 22
   User git
-  IdentityFile /var/jenkins_home/.ssh/id_ed25519
+  IdentityFile $HOME/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
   Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
   StrictHostKeyChecking yes
-  UserKnownHostsFile /var/jenkins_home/.ssh/known_hosts
+  UserKnownHostsFile $HOME/.ssh/known_hosts
 SSHEOF
                     chmod 600 "\$HOME/.ssh/config"
 
