@@ -10,23 +10,19 @@ declare(strict_types=1);
  */
 
 if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.use_strict_mode', '1');
-    ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Lax');
-
     $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || ((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 
-    $params = session_get_cookie_params();
     session_set_cookie_params([
-        'lifetime' => (int) ($params['lifetime'] ?? 0),
-        'path' => (string) ($params['path'] ?? '/'),
-        'domain' => (string) ($params['domain'] ?? ''),
-        'secure' => $isHttps ? true : (bool) ($params['secure'] ?? false),
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $isHttps,
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
 
+    ini_set('session.use_strict_mode', '1');
     session_start();
 }
 
