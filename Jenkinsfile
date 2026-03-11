@@ -111,6 +111,9 @@ spec:
                         script: 'git rev-parse --short HEAD',
                         returnStdout: true
                     ).trim()
+                    if (!env.SHORT_SHA) {
+                        error 'Failed to determine git commit SHA.'
+                    }
                     env.IMAGE_TAG = "sha-${env.SHORT_SHA}"
                 }
             }
@@ -130,15 +133,17 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 container('kaniko') {
-                    sh """
+                    // sh '''...''' prevents Groovy interpolation; the shell expands
+                    // $IMAGE and $IMAGE_TAG from the Jenkins environment at runtime.
+                    sh '''
                     /kaniko/executor \
-                        --context=dir://\$(pwd) \
+                        --context=dir://$(pwd) \
                         --dockerfile=Dockerfile \
                         --destination=${IMAGE}:${IMAGE_TAG} \
                         --destination=${IMAGE}:latest \
                         --cache=true \
                         --cleanup
-                    """
+                    '''
                 }
             }
         }
@@ -147,69 +152,73 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 container('git') {
-                    sh """
+                    // sh '''...''' prevents Groovy interpolation so that every $VAR
+                    // reference is expanded by the shell from Jenkins env vars.
+                    sh '''
                     set -euo pipefail
 
-                    WORK_DIR=\$(mktemp -d)
-                    HOME_DIR=\$(mktemp -d)
-                    trap 'rm -rf "\$WORK_DIR" "\$HOME_DIR"' EXIT
+                    WORK_DIR=$(mktemp -d)
+                    HOME_DIR=$(mktemp -d)
+                    trap 'rm -rf "$WORK_DIR" "$HOME_DIR"' EXIT
 
-                    export HOME="\$HOME_DIR"
-                    mkdir -p "\$HOME/.ssh"
-                    chmod 700 "\$HOME/.ssh"
+                    export HOME="$HOME_DIR"
+                    mkdir -p "$HOME/.ssh"
+                    chmod 700 "$HOME/.ssh"
 
                     if [ ! -f /etc/git-secret/ssh-privatekey ]; then
                         echo "Missing SSH key at /etc/git-secret/ssh-privatekey (Kubernetes secret: git-ssh-key)." >&2
                         exit 1
                     fi
-                    cp /etc/git-secret/ssh-privatekey "\$HOME/.ssh/id_ed25519"
-                    chmod 600 "\$HOME/.ssh/id_ed25519"
+                    cp /etc/git-secret/ssh-privatekey "$HOME/.ssh/id_ed25519"
+                    chmod 600 "$HOME/.ssh/id_ed25519"
 
-                    ssh-keyscan -4 github.com > "\$HOME/.ssh/known_hosts" 2>/dev/null
-                    chmod 644 "\$HOME/.ssh/known_hosts"
+                    ssh-keyscan -4 github.com > "$HOME/.ssh/known_hosts" 2>/dev/null
+                    chmod 644 "$HOME/.ssh/known_hosts"
 
                     # chacha20-poly1305 fails with EINVAL in the bitnami/git container; use AES-GCM instead
-                    cat > "\$HOME/.ssh/config" <<SSHEOF
+                    cat > "$HOME/.ssh/config" <<SSHEOF
 Host github.com
   HostName github.com
   Port 22
   User git
-  IdentityFile \$HOME/.ssh/id_ed25519
+  IdentityFile $HOME/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
   Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
   StrictHostKeyChecking yes
-  UserKnownHostsFile \$HOME/.ssh/known_hosts
+  UserKnownHostsFile $HOME/.ssh/known_hosts
 SSHEOF
-                    chmod 600 "\$HOME/.ssh/config"
+                    chmod 600 "$HOME/.ssh/config"
 
-                    export GIT_SSH_COMMAND="ssh -F \$HOME/.ssh/config -o IdentitiesOnly=yes"
+                    export GIT_SSH_COMMAND="ssh -F $HOME/.ssh/config -o IdentitiesOnly=yes"
 
-                    git clone --depth 1 --branch main ${GIT_REPO_GITOPS} "\$WORK_DIR"
-                    cd "\$WORK_DIR"
+                    git clone --depth 1 --branch main "${GIT_REPO_GITOPS}" "$WORK_DIR"
+                    cd "$WORK_DIR"
 
                     if [ ! -f "${KUSTOMIZATION_FILE}" ]; then
                         echo "Missing kustomization file: ${KUSTOMIZATION_FILE}" >&2
                         exit 1
                     fi
 
-                    # Update the image tag (portable sed; keeps indentation)
-                    sed -i.bak -E 's|^([[:space:]]*newTag:[[:space:]]*).*\$|\\1${IMAGE_TAG}|' ${KUSTOMIZATION_FILE}
+                    # Update the image tag (portable sed; keeps indentation).
+                    # Shell double-quotes let ${IMAGE_TAG} expand; \$ and \\1 are
+                    # passed to sed as literal $ (anchor) and \1 (backreference).
+                    sed -i.bak -E "s|^([[:space:]]*newTag:[[:space:]]*).*\$|\\1${IMAGE_TAG}|" "${KUSTOMIZATION_FILE}"
                     rm -f "${KUSTOMIZATION_FILE}.bak"
 
-                    git add ${KUSTOMIZATION_FILE}
+                    git add "${KUSTOMIZATION_FILE}"
                     git diff --cached --quiet && echo "No change to commit" && exit 0
 
-                    git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \\
+                    git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \
                         commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
 
                     for attempt in 1 2 3; do
                         git push origin main && break
-                        echo "Push attempt \$attempt failed, retrying in 5s..." >&2
+                        echo "Push attempt $attempt failed, retrying in 5s..." >&2
                         sleep 5
                         git pull --rebase origin main
                     done
-                    """
+                    '''
                 }
             }
         }
@@ -221,12 +230,12 @@ SSHEOF
                 if (env.SKIP_BUILD == 'true') {
                     echo "Skipped (commit by ${env.COMMIT_AUTHOR})."
                 } else {
-                    echo "Image ${IMAGE_TAG} built, pushed, and GitOps repo updated."
+                    echo "Image ${env.IMAGE_TAG} built, pushed, and GitOps repo updated."
                 }
             }
         }
         failure {
-            echo "Build failed. Check logs."
+            echo 'Build failed. Check logs.'
         }
     }
 }
