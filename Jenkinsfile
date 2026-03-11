@@ -36,7 +36,7 @@ spec:
           cpu: 250m
           memory: 256Mi
     - name: git
-      image: bitnami/git:latest
+      image: bitnami/git:2.47.1
       command: ["cat"]
       tty: true
       volumeMounts:
@@ -80,22 +80,17 @@ spec:
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         // Only build image and update GitOps when this repo (app) has a new commit from a
         // non-robot author. Skips when the trigger is a jenkins-ci commit to avoid loops.
         stage('Check commit author') {
             steps {
                 script {
-                    env.COMMIT_AUTHOR = sh(
+                    def commitAuthor = sh(
                         script: 'git log -1 --format=%an',
                         returnStdout: true
                     ).trim()
-                    if (env.COMMIT_AUTHOR == 'jenkins-ci') {
+                    env.COMMIT_AUTHOR = commitAuthor
+                    if (commitAuthor == 'jenkins-ci') {
                         echo "Commit by jenkins-ci — skipping build and GitOps update."
                         env.SKIP_BUILD = 'true'
                     } else {
@@ -109,15 +104,16 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 script {
-                    env.SHORT_SHA = sh(
+                    def shortSha = sh(
                         script: 'git rev-parse --short HEAD',
                         returnStdout: true
                     ).trim()
-                    if (!env.SHORT_SHA) {
+                    if (!shortSha) {
                         error 'Failed to determine git commit SHA.'
                     }
-                    env.IMAGE_TAG = "sha-${env.SHORT_SHA}"
-                    writeFile file: '.image-tag', text: env.IMAGE_TAG
+                    def imageTag = "sha-${shortSha}"
+                    env.IMAGE_TAG = imageTag
+                    writeFile file: '.image-tag', text: imageTag
                 }
             }
         }
@@ -126,10 +122,12 @@ spec:
             when { expression { env.SKIP_BUILD != 'true' } }
             steps {
                 container('test') {
-                    sh 'echo "Running PHP lint..."'
-                    sh 'find . -name "*.php" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l'
-                    sh 'echo "Running unit tests..."'
-                    sh 'php tests/run_tests.php'
+                    sh '''
+                    echo "Running PHP lint..."
+                    find . -name "*.php" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l
+                    echo "Running unit tests..."
+                    php tests/run_tests.php
+                    '''
                 }
             }
         }
@@ -201,7 +199,11 @@ spec:
                     cp /etc/git-secret/ssh-privatekey "$HOME/.ssh/id_ed25519"
                     chmod 600 "$HOME/.ssh/id_ed25519"
 
-                    ssh-keyscan -4 github.com > "$HOME/.ssh/known_hosts" 2>/dev/null
+                    ssh-keyscan -4 github.com > "$HOME/.ssh/known_hosts" 2>&1
+                    if [ ! -s "$HOME/.ssh/known_hosts" ]; then
+                        echo "ssh-keyscan failed to fetch GitHub host keys." >&2
+                        exit 1
+                    fi
                     chmod 644 "$HOME/.ssh/known_hosts"
 
                     # chacha20-poly1305 fails with EINVAL in the bitnami/git container; use AES-GCM instead
