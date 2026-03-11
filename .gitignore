@@ -13,3 +13,6 @@ Thumbs.db
 .env
 .env.local
 vendor/
+
+# CI (Jenkins writes image tag here for GitOps step)
+.image-tag

@@ -117,6 +117,7 @@ spec:
                         error 'Failed to determine git commit SHA.'
                     }
                     env.IMAGE_TAG = "sha-${env.SHORT_SHA}"
+                    writeFile file: '.image-tag', text: env.IMAGE_TAG
                 }
             }
         }
@@ -163,8 +164,14 @@ spec:
                     sh '''
                     set -euo pipefail
 
+                    # env.IMAGE_TAG may not propagate into the container; use workspace file from Prepare tags.
                     if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
-                        echo "IMAGE_TAG is not set or is null; cannot update GitOps. Check that Prepare tags stage set env.IMAGE_TAG." >&2
+                        if [ -f .image-tag ]; then
+                            export IMAGE_TAG=$(cat .image-tag)
+                        fi
+                    fi
+                    if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
+                        echo "IMAGE_TAG is not set or is null; cannot update GitOps. Check that Prepare tags stage ran and wrote .image-tag." >&2
                         exit 1
                     fi
 
