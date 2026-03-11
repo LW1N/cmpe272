@@ -87,6 +87,21 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertContains('href="/demo.php"', $output, 'Footer should contain demo link');
     });
 
+    $t->run('login page renders with CSRF token input', function () use ($t, $phpErrorPatterns) {
+        $_SESSION = [];
+        ob_start();
+        require PROJECT_ROOT . '/login.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('<!DOCTYPE html>', $output, 'login.php should contain DOCTYPE');
+        $t->assertContains('name="csrf_token"', $output, 'login.php should include a CSRF token input');
+        $t->assertContains('type="hidden"', $output, 'CSRF token should be a hidden input');
+
+        foreach ($phpErrorPatterns as $pattern) {
+            $t->assertNotContains($pattern, $output, "login.php should not contain '{$pattern}'");
+        }
+    });
+
     $t->run('contacts page displays contact table', function () use ($t) {
         $_SESSION = [];
         ob_start();

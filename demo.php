@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/auth.php';
+
 $dbHost = getenv('DB_HOST') ?: 'mysql';
 $dbName = getenv('DB_NAME') ?: 'demo';
 $dbUser = getenv('DB_USER') ?: 'demo';
@@ -29,9 +31,13 @@ try {
     ");
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['content'])) {
-        $stmt = $pdo->prepare("INSERT INTO messages (content) VALUES (:content)");
-        $stmt->execute(['content' => substr(trim($_POST['content']), 0, 500)]);
-        $success = 'Message saved!';
+        if (!verify_csrf_token((string) ($_POST['csrf_token'] ?? ''))) {
+            $error = 'Security validation failed. Please reload the page and try again.';
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO messages (content) VALUES (:content)");
+            $stmt->execute(['content' => substr(trim($_POST['content']), 0, 500)]);
+            $success = 'Message saved!';
+        }
     }
 
     $messages = $pdo->query(
@@ -39,10 +45,12 @@ try {
     )->fetchAll();
 
 } catch (PDOException $e) {
-    $error = 'Database error: ' . $e->getMessage();
+    error_log('demo.php database error: ' . $e->getMessage());
+    $error = 'A database error occurred. Please try again later.';
     $messages = [];
 }
 
+$csrf_token = generate_csrf_token();
 $page_title = 'Demo — Work in progress';
 $current_page = null; // demo is not in main nav as "current"
 require __DIR__ . '/includes/header.php';
@@ -54,6 +62,7 @@ require __DIR__ . '/includes/header.php';
 <?php if ($success): ?><p class="success"><?= htmlspecialchars($success) ?></p><?php endif; ?>
 
 <form method="POST" action="">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
     <input type="text" name="content" placeholder="Type a message…" required maxlength="500" autocomplete="off">
     <button type="submit" class="btn btn-primary">Send</button>
 </form>

@@ -1,6 +1,13 @@
 <?php
 require_once __DIR__ . '/auth.php';
 $page_title = $page_title ?? 'Pass & Play';
+
+if (!headers_sent()) {
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline';");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
