@@ -8,9 +8,9 @@ declare(strict_types=1);
  *
  * @return array<int, array{name: string, role: string, email: string, phone: string, discord: string}>
  */
-function load_contacts_from_files(): array
+function load_contacts_from_files(?string $contactsDir = null): array
 {
-    $contactsDir = __DIR__ . '/../data/contacts';
+    $contactsDir = $contactsDir ?? __DIR__ . '/../data/contacts';
     $contacts = [];
 
     if (!is_dir($contactsDir)) {
@@ -33,11 +33,11 @@ function load_contacts_from_files(): array
             continue;
         }
         try {
-            $header = fgetcsv($handle);
+            $header = fgetcsv($handle, 0, ',', '"', '');
             if ($header === false || array_map('strtolower', array_map('trim', $header)) !== $expectedHeader) {
                 continue; // skip files with wrong or missing header
             }
-            while (($row = fgetcsv($handle)) !== false) {
+            while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) {
                 if (count($row) < 5) {
                     continue;
                 }

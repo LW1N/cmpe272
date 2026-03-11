@@ -125,6 +125,8 @@ spec:
                 container('test') {
                     sh 'echo "Running PHP lint..."'
                     sh 'find . -name "*.php" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l'
+                    sh 'echo "Running unit tests..."'
+                    sh 'php tests/run_tests.php'
                 }
             }
         }
