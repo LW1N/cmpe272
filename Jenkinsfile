@@ -141,6 +141,17 @@ spec:
                     script {
                         withEnv(["IMAGE_TAG=${env.IMAGE_TAG}"]) {
                             sh '''
+                            # Recover IMAGE_TAG from workspace file if the env var didn't propagate.
+                            if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
+                                if [ -f .image-tag ]; then
+                                    export IMAGE_TAG=$(cat .image-tag)
+                                fi
+                            fi
+                            if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
+                                echo "IMAGE_TAG is not set; cannot build. Check that Prepare tags stage ran." >&2
+                                exit 1
+                            fi
+
                             /kaniko/executor \
                                 --context=dir://$(pwd) \
                                 --dockerfile=Dockerfile \
@@ -233,12 +244,20 @@ SSHEOF
                     git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \
                         commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
 
+                    push_ok=false
                     for attempt in 1 2 3; do
-                        git push origin main && break
+                        if git push origin main; then
+                            push_ok=true
+                            break
+                        fi
                         echo "Push attempt $attempt failed, retrying in 5s..." >&2
                         sleep 5
                         git pull --rebase origin main
                     done
+                    if [ "$push_ok" != "true" ]; then
+                        echo "All push attempts failed." >&2
+                        exit 1
+                    fi
                     '''
                         }
                     }
