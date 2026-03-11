@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
-// Backwards-compatible: admin login page moved to /login
+require_once __DIR__ . '/includes/auth.php';
+logout();
+
 header('Location: /login');
 exit;
+

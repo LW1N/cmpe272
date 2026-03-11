@@ -8,4 +8,6 @@
     RewriteRule ^services/?$ products.php [L]
     RewriteRule ^news/?$     news.php     [L]
     RewriteRule ^contacts/?$ contacts.php [L]
+    RewriteRule ^login/?$    login.php    [L]
+    RewriteRule ^logout/?$   logout.php   [L]
 </IfModule>

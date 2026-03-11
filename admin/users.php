@@ -5,7 +5,7 @@ require_once __DIR__ . '/auth.php';
 require_admin();
 
 $page_title = 'Current Users';
-$current_page = 'admin';
+$current_page = 'users';
 
 // Sample users list (no database)
 $users = [
@@ -40,5 +40,5 @@ require __DIR__ . '/../includes/header.php';
     </table>
 </div>
 
-<p><a href="/admin/logout.php" class="btn btn-secondary">Log out</a></p>
+<p><a href="/logout" class="btn btn-secondary">Log out</a></p>
 <?php require __DIR__ . '/../includes/footer.php'; ?>
