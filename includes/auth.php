@@ -9,6 +9,9 @@ declare(strict_types=1);
  * - Standard user login (demo config, see includes/auth_config.php)
  */
 
+/** Idle session lifetime in seconds (30 minutes). */
+define('SESSION_TIMEOUT', 1800);
+
 if (session_status() === PHP_SESSION_NONE) {
     $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || ((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
@@ -44,12 +47,46 @@ function current_userid(): string
     return (string) ($_SESSION['userid'] ?? '');
 }
 
+/** Generate (or return existing) a per-session CSRF token. */
+function generate_csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Verify a CSRF token submitted with a form.
+ * Uses hash_equals() to prevent timing attacks.
+ */
+function verify_csrf_token(string $token): bool
+{
+    return !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+/**
+ * Check whether the current session has been idle beyond SESSION_TIMEOUT.
+ * If so, destroys the session and redirects to the login page.
+ * Otherwise, refreshes the last-activity timestamp.
+ */
+function check_session_timeout(): void
+{
+    if (isset($_SESSION['last_activity']) && (time() - (int) $_SESSION['last_activity']) > SESSION_TIMEOUT) {
+        logout();
+        header('Location: /login?timeout=1');
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
+}
+
 function require_login(): void
 {
     if (!is_logged_in()) {
         header('Location: /login');
         exit;
     }
+    check_session_timeout();
 }
 
 function require_admin(): void
@@ -58,6 +95,7 @@ function require_admin(): void
         header('Location: /login');
         exit;
     }
+    check_session_timeout();
 }
 
 /**
@@ -77,6 +115,7 @@ function attempt_login(string $userid, string $password): bool
         $_SESSION['is_logged_in'] = true;
         $_SESSION['is_admin'] = true;
         $_SESSION['userid'] = $userid;
+        $_SESSION['last_activity'] = time();
         return true;
     }
 
@@ -87,6 +126,7 @@ function attempt_login(string $userid, string $password): bool
         $_SESSION['is_logged_in'] = true;
         $_SESSION['is_admin'] = false;
         $_SESSION['userid'] = $userid;
+        $_SESSION['last_activity'] = time();
         return true;
     }
 
