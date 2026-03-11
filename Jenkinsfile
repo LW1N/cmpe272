@@ -36,7 +36,7 @@ spec:
           cpu: 250m
           memory: 256Mi
     - name: git
-      image: bitnami/git:2.47.1
+      image: bitnami/git:latest
       command: ["cat"]
       tty: true
       volumeMounts:
