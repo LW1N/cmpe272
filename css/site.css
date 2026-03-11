@@ -100,7 +100,18 @@ a:hover { color: var(--accent-hover); }
     font-weight: 600;
     color: var(--text-primary);
     background: var(--bg-elevated);
+    text-decoration: none;
 }
+.site-nav .nav-user:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.site-nav .nav-login {
+    margin-left: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+.site-nav .nav-login:hover { color: var(--text-primary); }
 
 /* Main content */
 .site-main {

@@ -62,15 +62,15 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertNotContains('href="/admin/users.php"', $output, 'Nav should NOT contain Users link when logged out');
     });
 
-    $t->run('nav shows Users link and Log out for admin', function () use ($t) {
+    $t->run('nav shows Users link and username for admin', function () use ($t) {
         $_SESSION = ['is_logged_in' => true, 'is_admin' => true, 'userid' => 'admin'];
         ob_start();
         require PROJECT_ROOT . '/index.php';
         $output = ob_get_clean();
 
         $t->assertContains('href="/admin/users.php"', $output, 'Nav should contain Users link for admin');
-        $t->assertContains('href="/logout"', $output, 'Nav should contain Logout link when logged in');
-        $t->assertNotContains('href="/login"', $output, 'Nav should NOT contain Login link when logged in');
+        $t->assertContains('class="nav-user"', $output, 'Nav should contain username for admin');
+        $t->assertNotContains('class="nav-login"', $output, 'Nav should NOT contain Login link when logged in');
 
         $_SESSION = [];
     });

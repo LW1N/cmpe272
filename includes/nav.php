@@ -15,13 +15,6 @@ $nav_items = [
 if (is_admin()) {
     $nav_items['users'] = ['label' => 'Users', 'url' => '/admin/users.php'];
 }
-
-// Auth link
-if (is_logged_in()) {
-    $nav_items['logout'] = ['label' => 'Log out', 'url' => '/logout'];
-} else {
-    $nav_items['login'] = ['label' => 'Log in', 'url' => '/login'];
-}
 ?>
 <nav class="site-nav" aria-label="Main navigation">
     <?php foreach ($nav_items as $key => $item): ?>
@@ -32,6 +25,8 @@ if (is_logged_in()) {
     <?php endforeach; ?>
     <a href="/demo.php" class="nav-secondary">Demo</a>
     <?php if (is_logged_in()): ?>
-        <span class="nav-user" aria-label="Logged in as <?= htmlspecialchars(current_userid()) ?>"><?= htmlspecialchars(current_userid()) ?></span>
+        <a href="/logout" class="nav-user" aria-label="Logged in as <?= htmlspecialchars(current_userid()) ?>. Click to log out."><?= htmlspecialchars(current_userid()) ?></a>
+    <?php else: ?>
+        <a href="/login" class="nav-login">Log in</a>
     <?php endif; ?>
 </nav>

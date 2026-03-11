@@ -44,6 +44,17 @@ function run_user_access_tests(TestRunner $t): void
         $t->assertNotContains('class="nav-user"', $output, 'Nav should NOT contain nav-user element when logged out');
     });
 
+    $t->run('username links to logout', function () use ($t) {
+        $_SESSION = ['is_logged_in' => true, 'is_admin' => false, 'userid' => 'user'];
+        ob_start();
+        require PROJECT_ROOT . '/index.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('href="/logout" class="nav-user"', $output,
+            'Username element should link to /logout');
+        $_SESSION = [];
+    });
+
     // --- Admin-only "Users" link ---
 
     $t->run('admin sees Users link in nav', function () use ($t) {
@@ -76,27 +87,27 @@ function run_user_access_tests(TestRunner $t): void
         $t->assertNotContains('href="/admin/users.php"', $output, 'Nav should NOT contain Users link when logged out');
     });
 
-    // --- Log in / Log out link toggling ---
+    // --- Log in / username toggling ---
 
-    $t->run('logged-in user sees Log out, not Log in', function () use ($t) {
+    $t->run('logged-in user sees username, not Log in link', function () use ($t) {
         $_SESSION = ['is_logged_in' => true, 'is_admin' => false, 'userid' => 'user'];
         ob_start();
         require PROJECT_ROOT . '/index.php';
         $output = ob_get_clean();
 
-        $t->assertContains('href="/logout"', $output, 'Nav should contain Logout link when logged in');
-        $t->assertNotContains('href="/login"', $output, 'Nav should NOT contain Login link when logged in');
+        $t->assertContains('class="nav-user"', $output, 'Nav should contain username when logged in');
+        $t->assertNotContains('class="nav-login"', $output, 'Nav should NOT contain Log in link when logged in');
         $_SESSION = [];
     });
 
-    $t->run('logged-out visitor sees Log in, not Log out', function () use ($t) {
+    $t->run('logged-out visitor sees Log in, not username', function () use ($t) {
         $_SESSION = [];
         ob_start();
         require PROJECT_ROOT . '/index.php';
         $output = ob_get_clean();
 
-        $t->assertContains('href="/login"', $output, 'Nav should contain Login link when logged out');
-        $t->assertNotContains('href="/logout"', $output, 'Nav should NOT contain Logout link when logged out');
+        $t->assertContains('class="nav-login"', $output, 'Nav should contain Log in link when logged out');
+        $t->assertNotContains('class="nav-user"', $output, 'Nav should NOT contain username when logged out');
     });
 
     // --- Page title encoding ---
@@ -115,13 +126,13 @@ function run_user_access_tests(TestRunner $t): void
 
     // --- Username display with aria-label accessibility ---
 
-    $t->run('username span has proper aria-label for accessibility', function () use ($t) {
+    $t->run('username element has proper aria-label for accessibility', function () use ($t) {
         $_SESSION = ['is_logged_in' => true, 'is_admin' => false, 'userid' => 'user'];
         ob_start();
         require PROJECT_ROOT . '/index.php';
         $output = ob_get_clean();
 
-        $t->assertContains('aria-label="Logged in as user"', $output,
+        $t->assertContains('aria-label="Logged in as user', $output,
             'Username element should have descriptive aria-label');
         $_SESSION = [];
     });

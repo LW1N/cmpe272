@@ -7,38 +7,46 @@ require_admin();
 $page_title = 'Current Users';
 $current_page = 'users';
 
-// Sample users list (no database)
-$users = [
-    ['name' => 'Mary Smith'],
-    ['name' => 'John Wang'],
-    ['name' => 'Alex Bington'],
-    ['name' => 'Priya Nair'],
-    ['name' => 'Diego Martinez'],
+// Build user list from auth config
+$users = [];
+
+// Admin user
+$users[] = [
+    'userid' => ADMIN_USER,
+    'role'   => 'Admin',
 ];
+
+// Standard users
+foreach (array_keys(STANDARD_USERS) as $uid) {
+    $users[] = [
+        'userid' => $uid,
+        'role'   => 'User',
+    ];
+}
 
 require __DIR__ . '/../includes/header.php';
 ?>
 <h1>Current Users</h1>
-<p class="contacts-intro">Registered users of the site (sample list).</p>
+<p class="contacts-intro">Registered users of the site.</p>
 
 <div class="contacts-table-wrap">
     <table class="contacts-table" role="grid">
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Name</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Role</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($users as $i => $u): ?>
                 <tr>
                     <td><?= $i + 1 ?></td>
-                    <td><?= htmlspecialchars($u['name']) ?></td>
+                    <td><?= htmlspecialchars($u['userid']) ?></td>
+                    <td><?= htmlspecialchars($u['role']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </div>
-
-<p><a href="/logout" class="btn btn-secondary">Log out</a></p>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/auth.php';
 
 if (is_logged_in()) {
-    header('Location: ' . (is_admin() ? '/admin/users.php' : '/'));
+    header('Location: /');
     exit;
 }
 
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userid   = (string) ($_POST['userid'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
     if (attempt_login($userid, $password)) {
-        header('Location: ' . (is_admin() ? '/admin/users.php' : '/'));
+        header('Location: /');
         exit;
     }
     $error = 'Invalid credentials';
