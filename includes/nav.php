@@ -30,5 +30,5 @@ if (is_logged_in()) {
             <?= htmlspecialchars($item['label']) ?>
         </a>
     <?php endforeach; ?>
-    <a href="/demo.php" class="nav-secondary">Try the demo</a>
+    <a href="/demo.php" class="nav-secondary">Demo</a>
 </nav>

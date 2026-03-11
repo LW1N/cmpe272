@@ -17,7 +17,7 @@ require __DIR__ . '/includes/header.php';
         </ul>
     </div>
     <div class="cta-buttons">
-        <a href="/demo.php" class="btn btn-primary">Try the demo</a>
+        <a href="/demo.php" class="btn btn-primary">Demo</a>
         <a href="/contacts" class="btn btn-secondary">Contact us</a>
     </div>
 </section>
