@@ -8,6 +8,8 @@ COPY apache-htaccess.conf /etc/apache2/conf-available/htaccess.conf
 RUN a2enconf htaccess
 
 COPY index.php demo.php about.php products.php news.php contacts.php login.php logout.php .htaccess /var/www/html/
+COPY login /var/www/html/login
+COPY logout /var/www/html/logout
 COPY admin /var/www/html/admin
 COPY includes /var/www/html/includes
 COPY css /var/www/html/css
