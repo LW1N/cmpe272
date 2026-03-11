@@ -194,7 +194,7 @@ SSHEOF
                     fi
 
                     # Update the image tag (portable sed; keeps indentation)
-                    sed -i.bak -E 's|^([[:space:]]*newTag:[[:space:]]*).*$|\\1${IMAGE_TAG}|' ${KUSTOMIZATION_FILE}
+                    sed -i.bak -E 's|^([[:space:]]*newTag:[[:space:]]*).*\$|\\1${IMAGE_TAG}|' ${KUSTOMIZATION_FILE}
                     rm -f "${KUSTOMIZATION_FILE}.bak"
 
                     git add ${KUSTOMIZATION_FILE}
