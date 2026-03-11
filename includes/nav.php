@@ -7,6 +7,7 @@ $nav_items = [
     'products' => ['label' => 'Products', 'url' => '/products'],
     'news'     => ['label' => 'News',     'url' => '/news'],
     'contacts' => ['label' => 'Contacts', 'url' => '/contacts'],
+    'admin'    => ['label' => 'Admin',    'url' => '/admin/users.php'],
 ];
 ?>
 <nav class="site-nav" aria-label="Main navigation">
