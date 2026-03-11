@@ -86,6 +86,8 @@ spec:
             }
         }
 
+        // Only build image and update GitOps when this repo (app) has a new commit from a
+        // non-robot author. Skips when the trigger is a jenkins-ci commit to avoid loops.
         stage('Check commit author') {
             steps {
                 script {
@@ -94,7 +96,7 @@ spec:
                         returnStdout: true
                     ).trim()
                     if (env.COMMIT_AUTHOR == 'jenkins-ci') {
-                        echo "Commit by jenkins-ci — skipping build."
+                        echo "Commit by jenkins-ci — skipping build and GitOps update."
                         env.SKIP_BUILD = 'true'
                     } else {
                         env.SKIP_BUILD = 'false'
@@ -161,6 +163,11 @@ spec:
                     sh '''
                     set -euo pipefail
 
+                    if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
+                        echo "IMAGE_TAG is not set or is null; cannot update GitOps. Check that Prepare tags stage set env.IMAGE_TAG." >&2
+                        exit 1
+                    fi
+
                     WORK_DIR=$(mktemp -d)
                     HOME_DIR=$(mktemp -d)
                     trap 'rm -rf "$WORK_DIR" "$HOME_DIR"' EXIT
@@ -211,7 +218,10 @@ SSHEOF
                     rm -f "${KUSTOMIZATION_FILE}.bak"
 
                     git add "${KUSTOMIZATION_FILE}"
-                    git diff --cached --quiet && echo "No change to commit" && exit 0
+                    if git diff --cached --quiet; then
+                        echo "Kustomization newTag already ${IMAGE_TAG}; nothing to push."
+                        exit 0
+                    fi
 
                     git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \
                         commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
@@ -236,7 +246,7 @@ SSHEOF
                 if (env.SKIP_BUILD == 'true') {
                     echo "Skipped (commit by ${env.COMMIT_AUTHOR})."
                 } else {
-                    echo "Image ${env.IMAGE_TAG} built, pushed, and GitOps repo updated."
+                    echo "Image ${env.IMAGE_TAG} built and pushed; GitOps kustomization updated and pushed when changed."
                 }
             }
         }
