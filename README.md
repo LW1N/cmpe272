@@ -9,7 +9,7 @@ PHP + MySQL demo site (Pass & Play company site). Built by Jenkins, image promot
 find . -name "*.php" -exec php -l {} \;
 
 # Built-in server (no MySQL; /demo.php will error)
-php -S localhost:8000
+php -S localhost:8000 router.php
 
 # Docker build (use linux/amd64 for k3s)
 docker build --platform linux/amd64 -t php-mysql-demo:local .
