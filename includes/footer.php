@@ -1,7 +1,7 @@
 </main>
 <footer class="site-footer">
     <div class="footer-inner">
-        <p>&copy; <?= date('Y') ?> Pass & Play. A Discord-like space for communities — clearer, faster, and more fun.</p>
+        <p>&copy; <?= date('Y') ?> Pass &amp; Play. A Discord-like space for communities &mdash; clearer, faster, and more fun.</p>
         <p><a href="/contacts">Contact us</a> &middot; <a href="/demo.php">Demo</a></p>
     </div>
 </footer>

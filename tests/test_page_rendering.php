@@ -82,7 +82,7 @@ function run_page_rendering_tests(TestRunner $t): void
         $output = ob_get_clean();
 
         $year = date('Y');
-        $t->assertContains("&copy; {$year} Pass & Play", $output, 'Footer should contain copyright with current year');
+        $t->assertContains("&copy; {$year} Pass &amp; Play", $output, 'Footer should contain copyright with current year');
         $t->assertContains('href="/contacts"', $output, 'Footer should contain contact link');
         $t->assertContains('href="/demo.php"', $output, 'Footer should contain demo link');
     });

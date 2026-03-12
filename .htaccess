@@ -2,7 +2,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-    # Redirect /about -> about.php, etc.
     RewriteRule ^about/?$    about.php    [L]
     RewriteRule ^products/?$ products.php [L]
     RewriteRule ^services/?$ products.php [L]
@@ -10,4 +9,16 @@
     RewriteRule ^contacts/?$ contacts.php [L]
     RewriteRule ^login/?$    login.php    [L]
     RewriteRule ^logout/?$   logout.php   [L]
+</IfModule>
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(csv|json|md)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteRule ^data/         - [F,L]
+    RewriteRule ^includes/     - [F,L]
+    RewriteRule ^admin/config\.php$ - [F,L]
 </IfModule>

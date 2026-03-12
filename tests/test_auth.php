@@ -52,13 +52,13 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('whitespace-only userid is rejected', function () use ($t) {
         $_SESSION = [];
-        $t->assertFalse(attempt_login('   ', 'admin123'));
+        $t->assertFalse(attempt_login('   ', 'Adminpassword'));
         $t->assertFalse(is_logged_in());
     });
 
     $t->run('admin login succeeds with correct credentials', function () use ($t) {
         $_SESSION = [];
-        $t->assertTrue(attempt_login('admin', 'admin123'));
+        $t->assertTrue(attempt_login('admin', 'Adminpassword'));
         $t->assertTrue(is_logged_in());
         $t->assertTrue(is_admin());
         $t->assertEqual('admin', current_userid());
@@ -74,7 +74,7 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('logout() clears session state', function () use ($t) {
         $_SESSION = [];
-        attempt_login('admin', 'admin123');
+        attempt_login('admin', 'Adminpassword');
         $t->assertTrue(is_logged_in());
 
         logout();
@@ -126,7 +126,7 @@ function run_auth_tests(TestRunner $t): void
     $t->run('attempt_login() records last_activity in session', function () use ($t) {
         $_SESSION = [];
         $before = time();
-        attempt_login('admin', 'admin123');
+        attempt_login('admin', 'Adminpassword');
         $t->assertTrue(isset($_SESSION['last_activity']), 'last_activity should be set after login');
         $t->assertTrue((int)$_SESSION['last_activity'] >= $before, 'last_activity should be >= login time');
         $_SESSION = [];

@@ -30,6 +30,9 @@ require __DIR__ . '/includes/header.php';
             $title = $item['title'] ?? 'Untitled';
             $summary = $item['summary'] ?? '';
             $link = $item['link'] ?? '';
+            if ($link !== '' && !preg_match('#^https?://#i', $link)) {
+                $link = '';
+            }
             $displayDate = $date !== '' ? date('M j, Y', strtotime($date)) : '';
         ?>
             <li class="news-item">

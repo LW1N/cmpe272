@@ -14,6 +14,6 @@ declare(strict_types=1);
  */
 
 define('ADMIN_USER', 'admin');
-// Hash for password "admin123" — replace with your own hash (see above).
+// Hash for password "Adminpassword" — replace with your own hash (see above).
 // In production, set the ADMIN_PASSWORD_HASH environment variable instead.
-define('ADMIN_PASSWORD_HASH', getenv('ADMIN_PASSWORD_HASH') ?: '$2y$12$cDNCfFDsb8la/QKUr6qbt.aY0sNbncucVCxB3FaZ/qx3Rcip5zwPW');
+define('ADMIN_PASSWORD_HASH', getenv('ADMIN_PASSWORD_HASH') ?: '$2y$12$bHXB0IfZeE.xLkzOubx/IOUJbi2Cyw5R15omS435JxsQ1O86cql96');

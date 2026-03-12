@@ -3,6 +3,7 @@ require_once __DIR__ . '/auth.php';
 $page_title = $page_title ?? 'Pass & Play';
 
 if (!headers_sent()) {
+    header_remove('X-Powered-By');
     header('X-Frame-Options: DENY');
     header('X-Content-Type-Options: nosniff');
     header('Referrer-Policy: strict-origin-when-cross-origin');
