@@ -9,6 +9,11 @@ if (!headers_sent()) {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline';");
 }
+
+// Enforce idle session timeout on every page for logged-in users.
+if (is_logged_in()) {
+    check_session_timeout();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
