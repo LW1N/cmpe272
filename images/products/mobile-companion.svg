@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Mobile Companion</title>
+  <desc id="desc">Illustration for the Mobile Companion product.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d3040"/>
+      <stop offset="100%" stop-color="#0087b5"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#bg)"/>
+  <rect x="238" y="56" width="164" height="248" rx="30" fill="#d9f5ff"/>
+  <rect x="252" y="84" width="136" height="190" rx="20" fill="#192535"/>
+  <rect x="276" y="112" width="88" height="20" rx="10" fill="#75dfff"/>
+  <rect x="276" y="150" width="72" height="72" rx="18" fill="#30435e"/>
+  <rect x="362" y="150" width="2" height="72" rx="1" fill="#4e6785"/>
+  <rect x="276" y="236" width="88" height="12" rx="6" fill="#d9f5ff" opacity="0.88"/>
+  <circle cx="320" cy="287" r="10" fill="#5fcfff"/>
+  <text x="176" y="334" fill="#ffffff" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">Mobile Companion</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Moderator Console</title>
+  <desc id="desc">Illustration for the Moderator Console product.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3a241f"/>
+      <stop offset="100%" stop-color="#0e85a2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#bg)"/>
+  <rect x="100" y="86" width="440" height="188" rx="24" fill="#161d24" opacity="0.92"/>
+  <path d="M320 122l98 34v44c0 42-28 78-98 98-70-20-98-56-98-98v-44l98-34z" fill="#ffb892"/>
+  <path d="M320 148l62 22v26c0 28-18 52-62 68-44-16-62-40-62-68v-26l62-22z" fill="#16202e"/>
+  <path d="M298 196l16 16 34-42" fill="none" stroke="#8ee5ff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="314" fill="#ffffff" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">Moderator Console</text>
+</svg>

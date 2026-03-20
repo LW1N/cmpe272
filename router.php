@@ -9,13 +9,16 @@ declare(strict_types=1);
  */
 
 $routes = [
-    '/about'    => 'about.php',
-    '/products' => 'products.php',
-    '/services' => 'products.php',
-    '/news'     => 'news.php',
-    '/contacts' => 'contacts.php',
-    '/login'    => 'login.php',
-    '/logout'   => 'logout.php',
+    '/about'                 => 'about.php',
+    '/products'              => 'products.php',
+    '/services'              => 'products.php',
+    '/product'               => 'product.php',
+    '/recent-products'       => 'recent-products.php',
+    '/most-visited-products' => 'most-visited-products.php',
+    '/news'                  => 'news.php',
+    '/contacts'              => 'contacts.php',
+    '/login'                 => 'login.php',
+    '/logout'                => 'logout.php',
 ];
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

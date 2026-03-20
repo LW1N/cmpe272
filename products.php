@@ -1,58 +1,39 @@
 <?php
 declare(strict_types=1);
+
+require_once __DIR__ . '/includes/product_helpers.php';
+
 $page_title = 'Products & Services';
 $current_page = 'products';
+$products = get_product_catalog();
 require __DIR__ . '/includes/header.php';
 ?>
 <h1>Products &amp; Services</h1>
 
 <section class="section">
-    <h2>Plans &amp; pricing</h2>
-    <div class="contacts-table-wrap">
-        <table class="pricing-table">
-            <thead>
-                <tr>
-                    <th>Plan</th>
-                    <th>Best for</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Free</strong></td>
-                    <td>Small groups, trying Pass &amp; Play</td>
-                    <td>$0 / month</td>
-                </tr>
-                <tr>
-                    <td><strong>Pro</strong></td>
-                    <td>Growing communities, creators, teams</td>
-                    <td>$9 / month</td>
-                </tr>
-                <tr>
-                    <td><strong>Community+</strong></td>
-                    <td>Large servers, events, custom branding</td>
-                    <td>Contact sales</td>
-                </tr>
-            </tbody>
-        </table>
+    <h2>Explore our offerings</h2>
+    <p>Choose from 10 products and services built to help communities, creators, and teams run smoother on Pass &amp; Play.</p>
+    <div class="product-meta-links">
+        <a href="/recent-products">View last 5 visited products</a>
+        <a href="/most-visited-products">View top 5 most visited products</a>
     </div>
 </section>
 
 <section class="section">
-    <h2>Who it's for</h2>
+    <h2>Product catalog</h2>
     <div class="card-grid">
-        <div class="card">
-            <h3>For creators</h3>
-            <p>Run your community with one place for chat, voice, and events. Custom roles and moderation tools included.</p>
-        </div>
-        <div class="card">
-            <h3>For teams</h3>
-            <p>Keep work and play in sync. Threaded discussions, scheduled meetings, and simple permissions.</p>
-        </div>
-        <div class="card">
-            <h3>For gamers</h3>
-            <p>Low-latency voice, game nights, and LFG channels. Lightweight so it doesn't get in the way.</p>
-        </div>
+        <?php foreach ($products as $slug => $product): ?>
+            <article class="card product-card">
+                <img
+                    src="<?= htmlspecialchars($product['image']) ?>"
+                    alt="<?= htmlspecialchars($product['name']) ?>"
+                    class="product-card-image"
+                >
+                <h3><?= htmlspecialchars($product['name']) ?></h3>
+                <p><?= htmlspecialchars($product['short_description']) ?></p>
+                <p><a href="/product?slug=<?= urlencode($slug) ?>">View details</a></p>
+            </article>
+        <?php endforeach; ?>
     </div>
 </section>
 <?php require __DIR__ . '/includes/footer.php'; ?>

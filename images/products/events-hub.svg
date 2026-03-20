@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Events Hub</title>
+  <desc id="desc">Illustration for the Events Hub product.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#33263d"/>
+      <stop offset="100%" stop-color="#0a7ec2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#bg)"/>
+  <rect x="132" y="72" width="376" height="220" rx="24" fill="#171f35" opacity="0.92"/>
+  <rect x="132" y="72" width="376" height="48" rx="24" fill="#ff9a5f"/>
+  <rect x="172" y="146" width="70" height="46" rx="10" fill="#ffd2b7"/>
+  <rect x="258" y="146" width="70" height="46" rx="10" fill="#26304f"/>
+  <rect x="344" y="146" width="70" height="46" rx="10" fill="#ffd2b7"/>
+  <rect x="430" y="146" width="38" height="46" rx="10" fill="#26304f"/>
+  <rect x="172" y="206" width="156" height="46" rx="10" fill="#26304f"/>
+  <rect x="344" y="206" width="124" height="46" rx="10" fill="#ffd2b7"/>
+  <circle cx="214" cy="94" r="12" fill="#171f35"/>
+  <circle cx="426" cy="94" r="12" fill="#171f35"/>
+  <text x="132" y="322" fill="#ffffff" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">Events Hub</text>
+</svg>
