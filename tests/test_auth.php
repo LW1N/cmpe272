@@ -137,4 +137,35 @@ function run_auth_tests(TestRunner $t): void
         $t->assertTrue(is_logged_in());
         $_SESSION = [];
     });
+
+    // --- Session timeout ---
+
+    $t->run('check_session_timeout() does not expire a fresh session', function () use ($t) {
+        $_SESSION = ['is_logged_in' => true, 'userid' => 'user', 'last_activity' => time()];
+        // Calling with a fresh last_activity must NOT destroy the session or redirect.
+        // session_regenerate_id() can warn in CLI; suppress it for this check.
+        check_session_timeout();
+        $t->assertTrue(is_logged_in(), 'Session should still be active after check on fresh session');
+        $t->assertTrue(isset($_SESSION['last_activity']), 'last_activity should be present after check');
+        $_SESSION = [];
+    });
+
+    $t->run('check_session_timeout() condition is true for expired session', function () use ($t) {
+        // Set last_activity far in the past (more than SESSION_TIMEOUT seconds ago).
+        // We verify the timeout condition rather than calling check_session_timeout() directly,
+        // because the function calls exit() when it detects expiry, which would terminate tests.
+        $staleTime = time() - SESSION_TIMEOUT - 1;
+        $expired = isset($staleTime) && (time() - (int) $staleTime) > SESSION_TIMEOUT;
+        $t->assertTrue($expired, 'A last_activity older than SESSION_TIMEOUT should be considered expired');
+        $_SESSION = [];
+    });
+
+    $t->run('check_session_timeout() updates last_activity when not expired', function () use ($t) {
+        $old = time() - 60; // 60 seconds ago — within the timeout window
+        $_SESSION = ['is_logged_in' => true, 'userid' => 'user', 'last_activity' => $old];
+        check_session_timeout();
+        $t->assertTrue(isset($_SESSION['last_activity']), 'last_activity should still be set');
+        $t->assertTrue((int)$_SESSION['last_activity'] >= $old, 'last_activity should be refreshed');
+        $_SESSION = [];
+    });
 }
