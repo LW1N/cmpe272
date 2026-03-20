@@ -328,7 +328,11 @@ function attempt_login(string $userid, string $password): bool
 
     // Standard users (demo)
     $standardUsers = STANDARD_USERS;
-    if (isset($standardUsers[$userid]) && password_verify($password, $standardUsers[$userid])) {
+    if (
+        isset($standardUsers[$userid]['password_hash'])
+        && $standardUsers[$userid]['password_hash'] !== ''
+        && password_verify($password, $standardUsers[$userid]['password_hash'])
+    ) {
         session_regenerate_id(true);
         $_SESSION['is_logged_in'] = true;
         $_SESSION['is_admin'] = false;

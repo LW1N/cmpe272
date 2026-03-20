@@ -158,4 +158,17 @@ function run_user_access_tests(TestRunner $t): void
         $t->assertContains('class="nav-user"', $output, 'Nav-user should appear on news page');
         $_SESSION = [];
     });
+
+    $t->run('admin users page shows sample user contact details', function () use ($t) {
+        $_SESSION = ['is_logged_in' => true, 'is_admin' => true, 'userid' => 'admin', 'last_activity' => time()];
+        ob_start();
+        require PROJECT_ROOT . '/admin/users.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('Current Users', $output, 'Users page should render for admin');
+        $t->assertContains('mailto:user@passandplay.com', $output, 'Users page should include sample user email');
+        $t->assertContains('408-555-0100', $output, 'Users page should include sample phone number when available');
+        $t->assertContains('Not provided', $output, 'Users page should show fallback when phone is missing');
+        $_SESSION = [];
+    });
 }

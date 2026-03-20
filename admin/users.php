@@ -14,13 +14,17 @@ $users = [];
 $users[] = [
     'userid' => ADMIN_USER,
     'role'   => 'Admin',
+    'email'  => 'admin@passandplay.com',
+    'phone'  => '408-555-0199',
 ];
 
 // Standard users
-foreach (array_keys(STANDARD_USERS) as $uid) {
+foreach (STANDARD_USERS as $uid => $user) {
     $users[] = [
         'userid' => $uid,
         'role'   => 'User',
+        'email'  => $user['email'],
+        'phone'  => $user['phone'] !== '' ? $user['phone'] : 'Not provided',
     ];
 }
 
@@ -35,6 +39,8 @@ require __DIR__ . '/../includes/header.php';
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">User ID</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
                 <th scope="col">Role</th>
             </tr>
         </thead>
@@ -43,6 +49,8 @@ require __DIR__ . '/../includes/header.php';
                 <tr>
                     <td><?= $i + 1 ?></td>
                     <td><?= htmlspecialchars($u['userid']) ?></td>
+                    <td><a href="mailto:<?= htmlspecialchars($u['email']) ?>"><?= htmlspecialchars($u['email']) ?></a></td>
+                    <td><?= htmlspecialchars($u['phone']) ?></td>
                     <td><?= htmlspecialchars($u['role']) ?></td>
                 </tr>
             <?php endforeach; ?>
