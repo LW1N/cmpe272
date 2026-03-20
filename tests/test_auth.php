@@ -6,6 +6,7 @@ function run_auth_tests(TestRunner $t): void
     $t->section('Authentication');
 
     require_once PROJECT_ROOT . '/includes/auth.php';
+    reset_login_throttle_store();
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
@@ -40,24 +41,28 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('attempt_login() fails with wrong password', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $t->assertFalse(attempt_login('admin', 'wrongpassword'));
         $t->assertFalse(is_logged_in());
     });
 
     $t->run('attempt_login() fails with unknown user', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $t->assertFalse(attempt_login('nonexistent', 'password123'));
         $t->assertFalse(is_logged_in());
     });
 
     $t->run('whitespace-only userid is rejected', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $t->assertFalse(attempt_login('   ', 'Adminpassword'));
         $t->assertFalse(is_logged_in());
     });
 
     $t->run('admin login succeeds with correct credentials', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $t->assertTrue(attempt_login('admin', 'Adminpassword'));
         $t->assertTrue(is_logged_in());
         $t->assertTrue(is_admin());
@@ -66,6 +71,7 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('standard user login succeeds with correct credentials', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $t->assertTrue(attempt_login('user', 'user123'));
         $t->assertTrue(is_logged_in());
         $t->assertFalse(is_admin());
@@ -74,6 +80,7 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('logout() clears session state', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         attempt_login('admin', 'Adminpassword');
         $t->assertTrue(is_logged_in());
 
@@ -125,6 +132,7 @@ function run_auth_tests(TestRunner $t): void
 
     $t->run('attempt_login() records last_activity in session', function () use ($t) {
         $_SESSION = [];
+        reset_login_throttle_store();
         $before = time();
         attempt_login('admin', 'Adminpassword');
         $t->assertTrue(isset($_SESSION['last_activity']), 'last_activity should be set after login');
@@ -136,5 +144,22 @@ function run_auth_tests(TestRunner $t): void
         $_SESSION = ['is_logged_in' => true, 'is_admin' => false, 'userid' => 'user', 'last_activity' => time()];
         $t->assertTrue(is_logged_in());
         $_SESSION = [];
+    });
+
+    $t->run('auth configuration is available in test environment', function () use ($t) {
+        $t->assertTrue(auth_is_configured());
+        $t->assertEqual([], auth_configuration_errors());
+    });
+
+    $t->run('login throttling blocks repeated failed attempts', function () use ($t) {
+        $_SESSION = [];
+        reset_login_throttle_store();
+
+        for ($i = 0; $i < LOGIN_MAX_ATTEMPTS; $i++) {
+            $t->assertFalse(attempt_login('admin', 'wrongpassword'));
+        }
+
+        $t->assertTrue(is_login_rate_limited('admin'));
+        $t->assertFalse(attempt_login('admin', 'Adminpassword'));
     });
 }

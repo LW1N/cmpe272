@@ -25,20 +25,23 @@ find . -name "*.php" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l
 # Run test suite
 php tests/run_tests.php
 
-# Built-in server (no MySQL by default; /demo.php needs DB_* env vars)
+# Built-in server (admin login needs ADMIN_PASSWORD_HASH; /demo.php also needs DB_* env vars)
+export ADMIN_PASSWORD_HASH="$(php -r "echo password_hash('your_admin_password', PASSWORD_DEFAULT);")"
 php -S 127.0.0.1:8000 router.php
 
 # Docker build (use linux/amd64 for k3s)
 docker build --platform linux/amd64 -t php-mysql-demo:local .
-docker run --rm -p 8080:80 php-mysql-demo:local
+docker run --rm -p 8080:80 -e ADMIN_PASSWORD_HASH="$ADMIN_PASSWORD_HASH" php-mysql-demo:local
 ```
 
 Notes:
 - `router.php` is required for clean URLs (`/about`, `/products`, `/product`, `/recent-products`, `/most-visited-products`, `/login`, `/logout`, etc.) when using PHP's built-in server.
 - `demo.php` uses `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASS` environment variables (defaults: `mysql`, `demo`, `demo`, empty password).
-- Admin credentials are configured in `admin/config.php` (or via `ADMIN_PASSWORD_HASH` environment variable).
+- `ADMIN_PASSWORD_HASH` is required for admin login.
+- `STANDARD_USERS_JSON` is optional and can define non-admin users as a JSON object of `userid -> password_hash`.
 - Product metadata lives in `data/products.php`, and visit tracking helpers live in `includes/product_helpers.php`.
 - Product images are stored under `images/products/`.
+- `demo.php` now requires login.
 
 ## Security
 

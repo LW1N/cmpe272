@@ -11,6 +11,12 @@ error_reporting(E_ALL);
 
 define('PROJECT_ROOT', dirname(__DIR__));
 
+putenv('ADMIN_PASSWORD_HASH=$2y$12$bHXB0IfZeE.xLkzOubx/IOUJbi2Cyw5R15omS435JxsQ1O86cql96');
+putenv('STANDARD_USERS_JSON={"user":"$2y$12$8c5BG1SvlxiyGtYo8v7qTeAHndGvjGceRvguidhJBtOktvAmKMFL."}');
+putenv('LOGIN_MAX_ATTEMPTS=5');
+putenv('LOGIN_ATTEMPT_WINDOW=300');
+putenv('LOGIN_LOCKOUT_SECONDS=900');
+
 $_SERVER['REQUEST_METHOD'] = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $_SERVER['SERVER_NAME'] = $_SERVER['SERVER_NAME'] ?? 'localhost';

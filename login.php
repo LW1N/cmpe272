@@ -10,11 +10,16 @@ if (is_logged_in()) {
 
 $error = '';
 $timeout = !empty($_GET['timeout']);
+$authConfigErrors = auth_configuration_errors();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userid   = (string) ($_POST['userid'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
-    if (!verify_csrf_token((string) ($_POST['csrf_token'] ?? ''))) {
+    if ($authConfigErrors !== []) {
+        $error = 'Log in is unavailable until authentication secrets are configured.';
+    } elseif (is_login_rate_limited($userid)) {
+        $error = 'Too many login attempts. Please wait and try again.';
+    } elseif (!verify_csrf_token((string) ($_POST['csrf_token'] ?? ''))) {
         $error = 'Security validation failed. Please reload the page and try again.';
     } elseif (attempt_login($userid, $password)) {
         header('Location: /');
@@ -35,6 +40,9 @@ require __DIR__ . '/includes/header.php';
 <?php if ($timeout && $error === ''): ?>
     <p class="error">Your session expired due to inactivity. Please log in again.</p>
 <?php endif; ?>
+<?php if ($authConfigErrors !== [] && $error === ''): ?>
+    <p class="error">Log in is unavailable until authentication secrets are configured.</p>
+<?php endif; ?>
 <?php if ($error !== ''): ?>
     <p class="error"><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
@@ -50,13 +58,4 @@ require __DIR__ . '/includes/header.php';
         <button type="submit" class="btn btn-primary">Log in</button>
     </div>
 </form>
-
-<section class="section">
-    <h3>Demo accounts</h3>
-    <ul>
-        <li><strong>Admin</strong>: userid <code>admin</code> (password is set in <code>admin/config.php</code>)</li>
-        <li><strong>Standard</strong>: userid <code>user</code> / password <code>user123</code></li>
-    </ul>
-</section>
 <?php require __DIR__ . '/includes/footer.php'; ?>
-
