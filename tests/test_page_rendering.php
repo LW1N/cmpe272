@@ -17,6 +17,7 @@ function run_page_rendering_tests(TestRunner $t): void
         'about.php'    => ['title' => 'About',    'h1' => 'About Pass & Play'],
         'products.php' => ['title' => 'Products', 'h1' => 'Products &amp; Services'],
         'news.php'     => ['title' => 'News',     'h1' => 'News'],
+        'users.php'    => ['title' => 'User Directory', 'h1' => 'User Directory'],
         'contacts.php' => ['title' => 'Contacts', 'h1' => 'Contacts'],
     ];
 
@@ -57,6 +58,7 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertContains('href="/about"', $output, 'Nav should contain About link');
         $t->assertContains('href="/products"', $output, 'Nav should contain Products link');
         $t->assertContains('href="/news"', $output, 'Nav should contain News link');
+        $t->assertContains('href="/users"', $output, 'Nav should contain Directory link');
         $t->assertContains('href="/contacts"', $output, 'Nav should contain Contacts link');
         $t->assertContains('href="/login"', $output, 'Nav should contain Login link when logged out');
         $t->assertNotContains('href="/admin/users.php"', $output, 'Nav should NOT contain Users link when logged out');
@@ -121,5 +123,30 @@ function run_page_rendering_tests(TestRunner $t): void
 
         $t->assertContains('news-list', $output, 'Should contain news list');
         $t->assertContains('Pass &amp; Play Pro tier now available', $output, 'Should display news title');
+    });
+
+    $t->run('user directory page displays local users and source links', function () use ($t) {
+        $_SESSION = [];
+        ob_start();
+        require PROJECT_ROOT . '/users.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('Connected Sources', $output, 'Directory page should show source section');
+        $t->assertContains('Pass &amp; Play', $output, 'Directory page should show local source');
+        $t->assertContains('Wyatt Avilla', $output, 'Directory page should list remote source names');
+        $t->assertContains('admin@passandplay.com', $output, 'Directory page should include the local admin user');
+        $t->assertContains('mailto:user@passandplay.com', $output, 'Directory page should include local standard users');
+        $t->assertContains('/api/local_users.php', $output, 'Directory page should link to the local curl endpoint');
+    });
+
+    $t->run('local users API returns JSON for curl clients', function () use ($t) {
+        $_SESSION = [];
+        ob_start();
+        require PROJECT_ROOT . '/api/local_users.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('"company": "Pass & Play"', $output, 'Local API should include the app name');
+        $t->assertContains('"userid": "admin"', $output, 'Local API should include the admin user');
+        $t->assertContains('"email": "user@passandplay.com"', $output, 'Local API should include standard users');
     });
 }

@@ -277,6 +277,43 @@ a:hover { color: var(--accent-hover); }
     color: var(--text-muted);
 }
 
+.directory-alert {
+    margin-bottom: 1.5rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(244, 71, 71, 0.35);
+    border-radius: 8px;
+    background: rgba(244, 71, 71, 0.12);
+    color: #ffb3b3;
+}
+
+.directory-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.directory-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(0, 122, 204, 0.16), rgba(37, 37, 38, 0.95));
+}
+
+.directory-stat-card strong {
+    font-size: 1.9rem;
+    line-height: 1;
+    color: #fff;
+}
+
+.directory-stat-card span {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
 /* Contact form (coming soon) */
 .contact-form-box {
     background: var(--bg-surface);

@@ -87,6 +87,15 @@ function run_user_access_tests(TestRunner $t): void
         $t->assertNotContains('href="/admin/users.php"', $output, 'Nav should NOT contain Users link when logged out');
     });
 
+    $t->run('all visitors see Directory link in nav', function () use ($t) {
+        $_SESSION = [];
+        ob_start();
+        require PROJECT_ROOT . '/index.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('href="/users"', $output, 'Nav should contain Directory link for visitors');
+    });
+
     // --- Log in / username toggling ---
 
     $t->run('logged-in user sees username, not Log in link', function () use ($t) {

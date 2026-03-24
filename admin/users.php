@@ -2,31 +2,13 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/users_directory.php';
 require_admin();
 
 $page_title = 'Current Users';
 $current_page = 'users';
 
-// Build user list from auth config
-$users = [];
-
-// Admin user
-$users[] = [
-    'userid' => ADMIN_USER,
-    'role'   => 'Admin',
-    'email'  => 'admin@passandplay.com',
-    'phone'  => '408-555-0199',
-];
-
-// Standard users
-foreach (STANDARD_USERS as $uid => $user) {
-    $users[] = [
-        'userid' => $uid,
-        'role'   => 'User',
-        'email'  => $user['email'],
-        'phone'  => $user['phone'] !== '' ? $user['phone'] : 'Not provided',
-    ];
-}
+$users = get_local_users();
 
 require __DIR__ . '/../includes/header.php';
 ?>

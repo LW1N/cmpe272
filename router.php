@@ -16,6 +16,7 @@ $routes = [
     '/recent-products'       => 'recent-products.php',
     '/most-visited-products' => 'most-visited-products.php',
     '/news'                  => 'news.php',
+    '/users'                 => 'users.php',
     '/contacts'              => 'contacts.php',
     '/login'                 => 'login.php',
     '/logout'                => 'logout.php',

@@ -8,6 +8,7 @@ $nav_items = [
     'about'    => ['label' => 'About',    'url' => '/about'],
     'products' => ['label' => 'Products', 'url' => '/products'],
     'news'     => ['label' => 'News',     'url' => '/news'],
+    'directory' => ['label' => 'Directory', 'url' => '/users'],
     'contacts' => ['label' => 'Contacts', 'url' => '/contacts'],
 ];
 
