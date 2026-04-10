@@ -72,10 +72,10 @@ spec:
     }
 
     environment {
-        IMAGE = 'docker.io/lw1n/php-mysql-demo'
+        IMAGE = 'docker.io/lw1n/pap_app'
         IMAGE_TAG = ''
         GIT_REPO_GITOPS = 'git@github.com:LW1N/selfhosted-webapps.git'
-        KUSTOMIZATION_FILE = 'apps/php-mysql-demo/kustomization.yaml'
+        KUSTOMIZATION_FILE = 'apps/pap_app/kustomization.yaml'
     }
 
     stages {
@@ -244,7 +244,7 @@ SSHEOF
                     fi
 
                     git -c user.name="jenkins-ci" -c user.email="jenkins@selfhosted-webapps.local" \
-                        commit -m "deploy: update php-mysql-demo image to ${IMAGE_TAG}"
+                        commit -m "deploy: update pap_app image to ${IMAGE_TAG}"
 
                     push_ok=false
                     for attempt in 1 2 3; do

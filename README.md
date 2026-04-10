@@ -1,9 +1,9 @@
-# Pass & Play (php-mysql-demo)
+# Pass & Play (pap_app)
 
 PHP + MySQL demo site (Pass & Play company site).
-This folder contains local application source and CI pipeline files used to build `docker.io/lw1n/php-mysql-demo`.
+This folder contains local application source and CI pipeline files used to build `docker.io/lw1n/pap_app`.
 
-Note: in the root GitOps repository, Flux deploys from `apps/php-mysql-demo`.
+Note: in the root GitOps repository, Flux deploys from `apps/pap_app`.
 This `cmpe272/` folder is typically used for local development and validation.
 
 ## App features
@@ -30,8 +30,8 @@ export ADMIN_PASSWORD_HASH="$(php -r "echo password_hash('your_admin_password', 
 php -S 127.0.0.1:8000 router.php
 
 # Docker build (use linux/amd64 for k3s)
-docker build --platform linux/amd64 -t php-mysql-demo:local .
-docker run --rm -p 8080:80 -e ADMIN_PASSWORD_HASH="$ADMIN_PASSWORD_HASH" php-mysql-demo:local
+docker build --platform linux/amd64 -t pap_app:local .
+docker run --rm -p 8080:80 -e ADMIN_PASSWORD_HASH="$ADMIN_PASSWORD_HASH" pap_app:local
 ```
 
 Notes:
@@ -53,9 +53,14 @@ Notes:
 ## CI/CD
 
 - Jenkins runs PHP lint and `php tests/run_tests.php`.
-- Jenkins builds the image and pushes `docker.io/lw1n/php-mysql-demo:sha-<shortsha>` and `latest`.
-- Jenkins then updates the image tag in the GitOps repo at `apps/php-mysql-demo/kustomization.yaml`.
+- Jenkins builds the image and pushes `docker.io/lw1n/pap_app:sha-<shortsha>` and `latest`.
+- Jenkins then updates the image tag in the GitOps repo at `apps/pap_app/kustomization.yaml`.
 - Flux reconciles and deploys the new version to the cluster.
+
+## Rename note
+
+- The GitOps app path has been renamed to `pap_app`.
+- The Docker image repository is `docker.io/lw1n/pap_app`.
 
 ## Docs
 
