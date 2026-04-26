@@ -419,7 +419,11 @@ a:hover { color: var(--accent-hover); }
 
 /* Forms */
 form { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-input[type="text"] {
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+textarea {
     flex: 1;
     min-width: 12rem;
     padding: 0.5rem 0.75rem;
@@ -429,8 +433,22 @@ input[type="text"] {
     background: var(--bg-elevated);
     color: var(--text-primary);
 }
-input[type="text"]::placeholder { color: var(--text-muted); }
-input[type="text"]:focus {
+textarea {
+    min-height: 6rem;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.45;
+}
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="search"]::placeholder,
+textarea::placeholder { color: var(--text-muted); }
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="search"]:focus,
+textarea:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
@@ -452,6 +470,77 @@ input[type="password"]:focus {
 }
 label { font-weight: 500; color: var(--text-secondary); }
 
+.user-summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-surface);
+}
+.user-summary strong {
+    color: #fff;
+    font-size: 1.7rem;
+    line-height: 1;
+}
+.user-summary span { color: var(--text-secondary); }
+.user-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+.user-action-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    align-items: flex-start;
+}
+.user-action-card .btn { margin-top: auto; }
+.form-panel {
+    display: block;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-surface);
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.form-field:nth-child(4) {
+    grid-column: 1 / -1;
+}
+.form-actions,
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+.form-actions { margin-top: 1rem; }
+.user-search-form {
+    margin-bottom: 2rem;
+}
+.user-search-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.search-row input[type="search"] {
+    min-width: min(24rem, 100%);
+}
+.form-error-list {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
 /* Utility */
 .meta { color: var(--text-muted); font-size: 0.9rem; }
 .error { color: var(--error); }
@@ -471,4 +560,5 @@ input:focus-visible {
     .hero h1 { font-size: 2rem; }
     .card-grid { grid-template-columns: 1fr; }
     .product-detail { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
 }

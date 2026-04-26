@@ -1,5 +1,5 @@
 <?php
-// $current_page: 'home' | 'about' | 'products' | 'news' | 'contacts' | null (no highlight)
+// $current_page: 'home' | 'about' | 'products' | 'news' | 'user' | 'contacts' | null (no highlight)
 $current_page = $current_page ?? null;
 require_once __DIR__ . '/auth.php';
 
@@ -8,6 +8,7 @@ $nav_items = [
     'about'    => ['label' => 'About',    'url' => '/about'],
     'products' => ['label' => 'Products', 'url' => '/products'],
     'news'     => ['label' => 'News',     'url' => '/news'],
+    'user'     => ['label' => 'User',     'url' => '/user'],
     'directory' => ['label' => 'Directory', 'url' => '/users'],
     'contacts' => ['label' => 'Contacts', 'url' => '/contacts'],
 ];

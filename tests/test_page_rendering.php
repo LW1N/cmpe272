@@ -17,6 +17,9 @@ function run_page_rendering_tests(TestRunner $t): void
         'about.php'    => ['title' => 'About',    'h1' => 'About Pass & Play'],
         'products.php' => ['title' => 'Products', 'h1' => 'Products &amp; Services'],
         'news.php'     => ['title' => 'News',     'h1' => 'News'],
+        'user.php'     => ['title' => 'User',     'h1' => 'User'],
+        'user-create.php' => ['title' => 'Create User', 'h1' => 'Create User'],
+        'user-search.php' => ['title' => 'Search Users', 'h1' => 'Search Users'],
         'users.php'    => ['title' => 'User Directory', 'h1' => 'User Directory'],
         'contacts.php' => ['title' => 'Contacts', 'h1' => 'Contacts'],
     ];
@@ -58,6 +61,7 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertContains('href="/about"', $output, 'Nav should contain About link');
         $t->assertContains('href="/products"', $output, 'Nav should contain Products link');
         $t->assertContains('href="/news"', $output, 'Nav should contain News link');
+        $t->assertContains('href="/user"', $output, 'Nav should contain User link');
         $t->assertContains('href="/users"', $output, 'Nav should contain Directory link');
         $t->assertContains('href="/contacts"', $output, 'Nav should contain Contacts link');
         $t->assertContains('href="/login"', $output, 'Nav should contain Login link when logged out');
@@ -137,6 +141,16 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertContains('admin@passandplay.com', $output, 'Directory page should include the local admin user');
         $t->assertContains('mailto:user@passandplay.com', $output, 'Directory page should include local standard users');
         $t->assertContains('/api/local_users.php', $output, 'Directory page should link to the local curl endpoint');
+    });
+
+    $t->run('user section links to creation and search forms', function () use ($t) {
+        $_SESSION = [];
+        ob_start();
+        require PROJECT_ROOT . '/user.php';
+        $output = ob_get_clean();
+
+        $t->assertContains('href="/user/create"', $output, 'User section should link to creation form');
+        $t->assertContains('href="/user/search"', $output, 'User section should link to search form');
     });
 
     $t->run('local users API returns JSON for curl clients', function () use ($t) {

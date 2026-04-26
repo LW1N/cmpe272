@@ -10,7 +10,7 @@ RUN apt-get update \
 COPY apache-htaccess.conf /etc/apache2/conf-available/htaccess.conf
 RUN a2enconf htaccess
 
-COPY index.php demo.php about.php products.php product.php recent-products.php most-visited-products.php news.php users.php contacts.php login.php logout.php .htaccess /var/www/html/
+COPY index.php demo.php about.php products.php product.php recent-products.php most-visited-products.php news.php user.php user-create.php user-search.php users.php contacts.php login.php logout.php .htaccess /var/www/html/
 COPY admin /var/www/html/admin
 COPY api /var/www/html/api
 COPY includes /var/www/html/includes

@@ -11,6 +11,10 @@ This `cmpe272/` folder is typically used for local development and validation.
 - Marketing pages for home, about, news, contacts, and products/services.
 - Product catalog with 10 products/services sourced from a shared data file.
 - Individual product detail pages with image, description, and back link.
+- MySQL-backed User section with:
+  - user creation form for first name, last name, email, home address, home phone, and cell phone
+  - user search form for names, email addresses, and phone numbers
+  - 20 seeded Pass & Play sample users
 - Cookie-based tracking for:
   - last 5 visited product pages
   - top 5 most visited products
@@ -36,7 +40,7 @@ docker run --rm -p 8080:80 -e ADMIN_PASSWORD_HASH="$ADMIN_PASSWORD_HASH" pap_app
 
 Notes:
 - `router.php` is required for clean URLs (`/about`, `/products`, `/product`, `/recent-products`, `/most-visited-products`, `/login`, `/logout`, etc.) when using PHP's built-in server.
-- `demo.php` uses `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASS` environment variables (defaults: `mysql`, `demo`, `demo`, empty password).
+- `demo.php` and the User section use `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASS` environment variables (defaults: `mysql`, `demo`, `demo`, empty password).
 - `ADMIN_PASSWORD_HASH` is required for admin login.
 - `STANDARD_USERS_JSON` is optional and can define non-admin users as a JSON object of `userid -> password_hash`.
 - Product metadata lives in `data/products.php`, and visit tracking helpers live in `includes/product_helpers.php`.
