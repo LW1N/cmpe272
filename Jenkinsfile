@@ -36,7 +36,7 @@ spec:
           cpu: 250m
           memory: 256Mi
     - name: git
-      image: bitnami/git:latest
+      image: bitnami/git:2.45.2
       command: ["cat"]
       tty: true
       volumeMounts:
@@ -206,7 +206,8 @@ spec:
                     fi
                     chmod 644 "$HOME/.ssh/known_hosts"
 
-                    # chacha20-poly1305 fails with EINVAL in the bitnami/git container; use AES-GCM instead
+                    # Prefer CTR ciphers; AES-GCM has caused SSH "incorrect signature"
+                    # failures in some git container/OpenSSH combinations.
                     cat > "$HOME/.ssh/config" <<SSHEOF
 Host github.com
   HostName github.com
@@ -215,7 +216,7 @@ Host github.com
   IdentityFile $HOME/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
-  Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+  Ciphers aes256-ctr,aes192-ctr,aes128-ctr
   StrictHostKeyChecking yes
   UserKnownHostsFile $HOME/.ssh/known_hosts
 SSHEOF
