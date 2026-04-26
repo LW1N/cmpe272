@@ -36,7 +36,7 @@ spec:
           cpu: 250m
           memory: 256Mi
     - name: git
-      image: bitnami/git:2.45.2
+      image: alpine/git:2.45.2
       command: ["cat"]
       tty: true
       volumeMounts:
@@ -201,15 +201,16 @@ spec:
                     cp /etc/git-secret/ssh-privatekey "$HOME/.ssh/id_ed25519"
                     chmod 600 "$HOME/.ssh/id_ed25519"
 
-                    ssh-keyscan -4 github.com > "$HOME/.ssh/known_hosts" 2>&1
+                    ssh-keyscan -4 -t ed25519 github.com > "$HOME/.ssh/known_hosts" 2>&1
                     if [ ! -s "$HOME/.ssh/known_hosts" ]; then
                         echo "ssh-keyscan failed to fetch GitHub host keys." >&2
                         exit 1
                     fi
                     chmod 644 "$HOME/.ssh/known_hosts"
 
-                    # Prefer CTR ciphers; AES-GCM has caused SSH "incorrect signature"
-                    # failures in some git container/OpenSSH combinations.
+                    # Use GitHub's ED25519 host key and let OpenSSH negotiate the
+                    # rest. The Bitnami git image/cipher override has failed with
+                    # "incorrect signature" during the SSH handshake.
                     cat > "$HOME/.ssh/config" <<SSHEOF
 Host github.com
   HostName github.com
@@ -218,13 +219,15 @@ Host github.com
   IdentityFile $HOME/.ssh/id_ed25519
   IdentitiesOnly yes
   AddressFamily inet
-  Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+  HostKeyAlgorithms ssh-ed25519
   StrictHostKeyChecking yes
   UserKnownHostsFile $HOME/.ssh/known_hosts
 SSHEOF
                     chmod 600 "$HOME/.ssh/config"
 
                     export GIT_SSH_COMMAND="ssh -F $HOME/.ssh/config -o IdentitiesOnly=yes"
+                    git --version
+                    ssh -V
 
                     git clone --depth 1 --branch main "${GIT_REPO_GITOPS}" "$WORK_DIR"
                     cd "$WORK_DIR"
