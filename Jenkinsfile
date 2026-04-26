@@ -146,8 +146,9 @@ spec:
                                 fi
                             fi
                             if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
-                                echo "IMAGE_TAG is not set; cannot build. Check that Prepare tags stage ran." >&2
-                                exit 1
+                                short_sha=$(git rev-parse --short HEAD)
+                                export IMAGE_TAG="sha-${short_sha}"
+                                printf '%s' "${IMAGE_TAG}" > .image-tag
                             fi
 
                             /kaniko/executor \
@@ -180,8 +181,9 @@ spec:
                         fi
                     fi
                     if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "null" ]; then
-                        echo "IMAGE_TAG is not set or is null; cannot update GitOps. Check that Prepare tags stage ran and wrote .image-tag." >&2
-                        exit 1
+                        short_sha=$(git rev-parse --short HEAD)
+                        export IMAGE_TAG="sha-${short_sha}"
+                        printf '%s' "${IMAGE_TAG}" > .image-tag
                     fi
 
                     WORK_DIR=$(mktemp -d)
