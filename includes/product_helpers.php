@@ -9,14 +9,14 @@ const PRODUCT_COOKIE_TTL = 2592000; // 30 days
 /**
  * Load the shared product catalog once per request.
  *
- * @return array<string, array{name: string, image: string, short_description: string, description: string}>
+ * @return array<string, array{name: string, price: float, image: string, short_description: string, description: string}>
  */
 function get_product_catalog(): array
 {
     static $products = null;
 
     if ($products === null) {
-        /** @var array<string, array{name: string, image: string, short_description: string, description: string}> $products */
+        /** @var array<string, array{name: string, price: float, image: string, short_description: string, description: string}> $products */
         $products = require __DIR__ . '/../data/products.php';
     }
 
@@ -124,7 +124,7 @@ function set_tracking_cookie(string $name, string $value): void
 }
 
 /**
- * @return array<int, array{slug: string, name: string, image: string, short_description: string, description: string}>
+ * @return array<int, array{slug: string, name: string, price: float, image: string, short_description: string, description: string}>
  */
 function get_recent_products(int $limit = PRODUCT_COOKIE_LIMIT): array
 {
@@ -147,7 +147,7 @@ function get_recent_products(int $limit = PRODUCT_COOKIE_LIMIT): array
 }
 
 /**
- * @return array<int, array{slug: string, name: string, image: string, short_description: string, description: string, visit_count: int}>
+ * @return array<int, array{slug: string, name: string, price: float, image: string, short_description: string, description: string, visit_count: int}>
  */
 function get_most_visited_products(int $limit = PRODUCT_COOKIE_LIMIT): array
 {

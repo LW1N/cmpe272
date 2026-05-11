@@ -11,6 +11,7 @@ This `cmpe272/` folder is typically used for local development and validation.
 - Marketing pages for home, about, news, contacts, and products/services.
 - Product catalog with 10 products/services sourced from a shared data file.
 - Individual product detail pages with image, description, and back link.
+- Public product catalog API for partner projects at `/api/company_products.php`.
 - MySQL-backed User section with:
   - user creation form for first name, last name, email, home address, home phone, and cell phone
   - user search form for names, email addresses, and phone numbers
@@ -45,6 +46,7 @@ Notes:
 - `STANDARD_USERS_JSON` is optional and can define non-admin users as a JSON object of `userid -> password_hash`.
 - Product metadata lives in `data/products.php`, and visit tracking helpers live in `includes/product_helpers.php`.
 - Product images are stored under `images/products/`.
+- The partner catalog API returns absolute product and image links. Set `PUBLIC_BASE_URL` when the app runs behind a proxy and needs a canonical external URL.
 - `demo.php` now requires login.
 
 ## Security

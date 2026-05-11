@@ -163,4 +163,33 @@ function run_page_rendering_tests(TestRunner $t): void
         $t->assertContains('"userid": "admin"', $output, 'Local API should include the admin user');
         $t->assertContains('"email": "user@passandplay.com"', $output, 'Local API should include standard users');
     });
+
+    $t->run('company products API returns JSON for partner clients', function () use ($t) {
+        $_SESSION = [];
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        putenv('PUBLIC_BASE_URL=https://catalog.example.test');
+
+        ob_start();
+        require PROJECT_ROOT . '/api/company_products.php';
+        $output = ob_get_clean();
+        putenv('PUBLIC_BASE_URL');
+
+        $decoded = json_decode($output, true);
+
+        $t->assertTrue(is_array($decoded), 'Company products API should return valid JSON');
+        $t->assertEqual('Pass & Play', $decoded['company_name'] ?? null, 'Company products API should include the app name');
+        $t->assertCount(10, $decoded['products'] ?? [], 'Company products API should return the full catalog');
+        $t->assertEqual('Community Launch Kit', $decoded['products'][0]['title'] ?? null, 'Company products API should include product titles');
+        $t->assertEqual(499.99, $decoded['products'][0]['price'] ?? null, 'Company products API should include mock prices');
+        $t->assertContains(
+            '"image_link": "https://catalog.example.test/images/products/community-launch-kit.svg"',
+            $output,
+            'Company products API should return absolute image URLs'
+        );
+        $t->assertContains(
+            '"product_link": "https://catalog.example.test/product?slug=community-launch-kit"',
+            $output,
+            'Company products API should return absolute product URLs'
+        );
+    });
 }
