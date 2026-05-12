@@ -192,4 +192,57 @@ function run_page_rendering_tests(TestRunner $t): void
             'Company products API should return absolute product URLs'
         );
     });
+
+    $t->run('most visited products API returns top five JSON for partner clients', function () use ($t) {
+        $_SESSION = [];
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        require_once PROJECT_ROOT . '/includes/product_helpers.php';
+        $dbFile = tempnam(sys_get_temp_dir(), 'pass_play_product_api_');
+        $pdo = new PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        foreach ([
+            'voice-lounge' => 2,
+            'events-hub' => 8,
+            'moderator-console' => 8,
+            'community-launch-kit' => 4,
+            'threaded-chat-suite' => 1,
+            'mobile-companion' => 3,
+            'missing-product' => 99,
+        ] as $slug => $count) {
+            for ($i = 0; $i < $count; $i++) {
+                increment_global_product_visit($pdo, $slug);
+            }
+        }
+
+        putenv('PRODUCT_VISITS_DSN=sqlite:' . $dbFile);
+        putenv('PUBLIC_BASE_URL=https://catalog.example.test');
+
+        ob_start();
+        require PROJECT_ROOT . '/api/most_visited_products.php';
+        $output = ob_get_clean();
+        putenv('PRODUCT_VISITS_DSN');
+        putenv('PUBLIC_BASE_URL');
+
+        if (is_string($dbFile) && file_exists($dbFile)) {
+            unlink($dbFile);
+        }
+
+        $decoded = json_decode($output, true);
+
+        $t->assertTrue(is_array($decoded), 'Most visited products API should return valid JSON');
+        $t->assertEqual('Pass & Play', $decoded['company_name'] ?? null, 'Most visited products API should include the app name');
+        $t->assertEqual('global', $decoded['tracking_scope'] ?? null, 'Most visited products API should identify its tracking scope');
+        $t->assertCount(5, $decoded['products'] ?? [], 'Most visited products API should return five products');
+        $t->assertEqual('Events Hub', $decoded['products'][0]['title'] ?? null, 'Most visited products API should sort by visit count');
+        $t->assertEqual(8, $decoded['products'][0]['visit_count'] ?? null, 'Most visited products API should include visit counts');
+        $t->assertEqual('Moderator Console', $decoded['products'][1]['title'] ?? null, 'Most visited products API should use product name as tie-breaker');
+        $t->assertNotContains('missing-product', $output, 'Most visited products API should ignore unknown product slugs');
+        $t->assertContains(
+            '"product_link": "https://catalog.example.test/product?slug=events-hub"',
+            $output,
+            'Most visited products API should return absolute product URLs'
+        );
+    });
 }

@@ -43,6 +43,9 @@ run_news_data_tests($t);
 require __DIR__ . '/test_company_users.php';
 run_company_user_tests($t);
 
+require __DIR__ . '/test_product_visits.php';
+run_product_visit_tests($t);
+
 require __DIR__ . '/test_page_rendering.php';
 run_page_rendering_tests($t);
 

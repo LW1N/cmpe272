@@ -11,14 +11,14 @@ This `cmpe272/` folder is typically used for local development and validation.
 - Marketing pages for home, about, news, contacts, and products/services.
 - Product catalog with 10 products/services sourced from a shared data file.
 - Individual product detail pages with image, description, and back link.
-- Public product catalog API for partner projects at `/api/company_products.php`.
+- Public product catalog APIs for partner projects at `/api/company_products.php` and `/api/most_visited_products.php`.
 - MySQL-backed User section with:
   - user creation form for first name, last name, email, home address, home phone, and cell phone
   - user search form for names, email addresses, and phone numbers
   - 20 seeded Pass & Play sample users
-- Cookie-based tracking for:
+- Product tracking for:
   - last 5 visited product pages
-  - top 5 most visited products
+  - global top 5 most visited products
 - Admin and login flows used by the demo site.
 
 ## Local development
@@ -46,7 +46,9 @@ Notes:
 - `STANDARD_USERS_JSON` is optional and can define non-admin users as a JSON object of `userid -> password_hash`.
 - Product metadata lives in `data/products.php`, and visit tracking helpers live in `includes/product_helpers.php`.
 - Product images are stored under `images/products/`.
-- The partner catalog API returns absolute product and image links. Set `PUBLIC_BASE_URL` when the app runs behind a proxy and needs a canonical external URL.
+- The partner catalog APIs return absolute product and image links. Set `PUBLIC_BASE_URL` when the app runs behind a proxy and needs a canonical external URL.
+- Last 5 visited products remain visitor-cookie based. Top 5 most visited products and `/api/most_visited_products.php` use global MySQL counts in `product_visit_counts`.
+- In local development, global top 5 counts require the same MySQL connection env vars as the User section; if MySQL is unavailable, product pages still render and recent-products cookies still work, but global top 5 returns an empty list.
 - `demo.php` now requires login.
 
 ## Security
